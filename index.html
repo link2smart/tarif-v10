@@ -58,7 +58,6 @@
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
         // --- CONFIGURATION CRITIQUE ---
-        // TOKEN INTEGRE (Nouveau Token fourni)
         const HARDCODED_DBX_TOKEN = "sl.u.AGP_-1ZcOdwC35XJ2qmgGFHchBQHYALaMJkJ_KZBt33HewKMptgHhUCH4eLfiMJMpVaIOfoA20H2wvZ3ouyNGwe_xorBaub67i6DknrztsbRba6lJXu_yR3zF0ftiqQLLNEItHeVnJ47CDVB2DLQF9jD1K5zgax3Shlc6mSc_zbn3cummYNB7_w2PZmd968_Jhbssthino-0NSpxFqpN6IZ75QQ-N0L20zOuCEi_IrbsY0iwUYOz3FqtQWKuhZMOoE2X_VEstKbwiSDN0TZQiT-ZqKjvlJ62CA8cTYlYvDnqTfZlTC9oQQNrnha5rdodAABM33NywpyXECy-WU1ARNaQ9OtBw3GsfXbvhAkuaiuc768sClBwoYv_aNZd0XuxUctYjYs6h-8lmKClkfBlP0Jcgorc74eX8QbKWi_Vh_G3N02ozQByhxfY7SxaCxS20Zkq7-oqJHSpDjjB2zHaruTGsNigadNiqRN7d2GHoPsRzfGC_XDPui14bk2GgaB8yqwQ5C33Rnbkhtue4wlz4XrLECdQg5bzIh2desXeMAKkq47Pp8v4uQvLRzKTEOnrAJMABONhqGGMzzJuhTYo7tegI62kSHOULZnA5Jv6kAAeA8ucnhlcVsR3ncpTl6kiUO6cQn5TQFiqiVE3HzMbAHl3wXOGSs9y920JptmZ9Y6m87FkHrt46Mt5GZKeXhQude-S2_LGVUwpxto3iejATwZL82oRaCSnEOgoFI1Ecec1shYtmw3zbKVZ7Dfx_y2hs7JrCu1Fqojj9ZvzEukJZD3CK12zaRyIPUUE9UftfrAuhQr-QuwYxW5glkFZMH-m967L3PIvFgOwn4r8CM6s393v6Sl6zY0tEp0KscRWP1qcb8krPdpDMAmEEVWaPeR10j8q5S-VI3JdS2AoXH1BiHuVus91IfBX1J4vBgNa7KPlYgyyqRoWrr8XvYNwMN3Lh4nsdmohRshsJfM-7kimuXw6zR0BUxR7tiC1lKgD3ujk9iK8hh5eBr_iwBqMVWTKVgcdMEfF6Ag9jiuJSrzpmDW73dAweTO3-8NRohFn_KHjng9wqOnGbg4owZDWTsd9aQORU2xWjWSpakPOfI8fi1My8_S1Q8do8Vf9DO5PrWDBBLTG7bmslXAMUL72undLhv9AItBHkSlXMWvdh37g5uL0rYUjs2W9n1l7PbAS3BDfFhYng7uT_fkeFylf3iMWEf0efznRph2GorfaEfsZfc5Gy-oVUUSkVVQhlPKYrro_GgxdU4fXKzcEGX4ykPK9UybtvGF7Z63fQy6mY8KNIcOJ"; 
         
         const DEFAULT_USERS = [
@@ -121,15 +120,6 @@
             return await res.blob();
         };
 
-        const dbxGetLink = async (token, path) => {
-            const res = await fetchWithRetry(`https://api.dropboxapi.com/2/files/get_temporary_link`, {
-                method: 'POST',
-                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ path })
-            });
-            return await res.json();
-        };
-
         const dbxUploadFile = async (token, path, content) => {
             const res = await fetchWithRetry(`https://content.dropboxapi.com/2/files/upload`, {
                 method: 'POST',
@@ -178,13 +168,140 @@
         const Icon = ({ name, size = 18, className = "" }) => {
             const iconRef = useRef(null);
             useEffect(() => {
-                if (window.lucide && iconRef.current) {
+                if (window.lucide && iconRef.current && name) {
                     const kebabName = name.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
                     iconRef.current.innerHTML = `<i data-lucide="${kebabName}"></i>`;
                     window.lucide.createIcons({ root: iconRef.current, attrs: { width: size, height: size, class: className } });
                 }
             }, [name, size, className]);
             return <span ref={iconRef} className="inline-flex items-center justify-center" />;
+        };
+
+        // --- COMPOSANT FILE VIEWER (MEMOIRE VOLATILE) ---
+        const FileViewer = ({ file, onClose, onDownload }) => {
+            const [contentUrl, setContentUrl] = useState(null);
+            const [fileType, setFileType] = useState(null);
+            const [pdfDoc, setPdfDoc] = useState(null);
+            const [pageNum, setPageNum] = useState(1);
+            const [error, setError] = useState(null);
+            const canvasRef = useRef(null);
+
+            useEffect(() => {
+                if (!file || !file.blob) return;
+                
+                const url = URL.createObjectURL(file.blob);
+                setContentUrl(url);
+                
+                // Détection type
+                const lowerName = file.name.toLowerCase();
+                if (lowerName.endsWith('.pdf')) {
+                    setFileType('pdf');
+                    // Init PDF.js
+                    const loadingTask = pdfjsLib.getDocument(url);
+                    loadingTask.promise.then(pdf => {
+                        setPdfDoc(pdf);
+                    }, err => {
+                        console.error('Erreur chargement PDF:', err);
+                        setError("Impossible de lire le PDF.");
+                    });
+                } else if (lowerName.match(/\.(jpeg|jpg|png|gif|webp)$/)) {
+                    setFileType('image');
+                } else {
+                    setError("Format non supporté pour la prévisualisation.");
+                }
+
+                // Cleanup: libérer la mémoire quand le composant est démonté
+                return () => {
+                    URL.revokeObjectURL(url);
+                };
+            }, [file]);
+
+            useEffect(() => {
+                if (fileType === 'pdf' && pdfDoc && canvasRef.current) {
+                    renderPage(pageNum);
+                }
+            }, [pdfDoc, pageNum, fileType]);
+
+            const renderPage = (num) => {
+                pdfDoc.getPage(num).then(page => {
+                    const canvas = canvasRef.current;
+                    const context = canvas.getContext('2d');
+                    
+                    // Calcul échelle pour fit width/height
+                    const viewport = page.getViewport({ scale: 1.5 });
+                    canvas.height = viewport.height;
+                    canvas.width = viewport.width;
+
+                    const renderContext = {
+                        canvasContext: context,
+                        viewport: viewport
+                    };
+                    page.render(renderContext);
+                });
+            };
+
+            return (
+                <div className="fixed inset-0 bg-slate-900/95 z-[100] flex flex-col animate-fade">
+                    {/* Toolbar */}
+                    <div className="flex justify-between items-center p-4 bg-slate-800 text-white shadow-md">
+                        <div className="flex items-center gap-3">
+                            <div className="p-2 bg-blue-600 rounded-lg"><Icon name="FileText" size={20}/></div>
+                            <div>
+                                <h3 className="font-bold text-sm md:text-base">{file.name}</h3>
+                                <p className="text-xs text-slate-400">Mode Lecture (Mémoire Volatile)</p>
+                            </div>
+                        </div>
+                        <div className="flex gap-2">
+                            <button onClick={() => onDownload(file)} className="p-2 bg-slate-700 hover:bg-green-600 rounded-lg transition-colors flex items-center gap-2 text-sm font-bold">
+                                <Icon name="Download" size={16}/> <span className="hidden md:inline">Sauvegarder</span>
+                            </button>
+                            <button onClick={onClose} className="p-2 bg-red-600 hover:bg-red-700 rounded-lg transition-colors">
+                                <Icon name="X" size={20}/>
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Content */}
+                    <div className="flex-1 overflow-auto flex justify-center p-4">
+                        {error ? (
+                            <div className="text-white flex flex-col items-center justify-center">
+                                <Icon name="AlertTriangle" size={48} className="text-yellow-500 mb-4"/>
+                                <p>{error}</p>
+                            </div>
+                        ) : (
+                            <>
+                                {fileType === 'image' && (
+                                    <img src={contentUrl} alt="Preview" className="max-w-full h-auto object-contain rounded shadow-lg" />
+                                )}
+                                {fileType === 'pdf' && (
+                                    <div className="flex flex-col items-center gap-4">
+                                        <canvas ref={canvasRef} className="shadow-2xl rounded-sm bg-white"/>
+                                        {pdfDoc && (
+                                            <div className="fixed bottom-8 bg-slate-800/90 text-white px-6 py-3 rounded-full flex items-center gap-6 shadow-xl backdrop-blur">
+                                                <button 
+                                                    disabled={pageNum <= 1} 
+                                                    onClick={() => setPageNum(p => p - 1)}
+                                                    className="hover:text-blue-400 disabled:opacity-30 disabled:cursor-not-allowed"
+                                                >
+                                                    <Icon name="ArrowLeft" size={24}/>
+                                                </button>
+                                                <span className="font-mono font-bold">{pageNum} / {pdfDoc.numPages}</span>
+                                                <button 
+                                                    disabled={pageNum >= pdfDoc.numPages} 
+                                                    onClick={() => setPageNum(p => p + 1)}
+                                                    className="hover:text-blue-400 disabled:opacity-30 disabled:cursor-not-allowed"
+                                                >
+                                                    <Icon name="ArrowRight" size={24}/>
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                            </>
+                        )}
+                    </div>
+                </div>
+            );
         };
 
         // --- APPLICATION ---
@@ -206,10 +323,14 @@
             const [searchQuery, setSearchQuery] = useState('');
             const [syncLog, setSyncLog] = useState('');
             const [syncStatus, setSyncStatus] = useState('idle');
-            const [showConfigModal, setShowConfigModal] = useState(false); // Ajout variable manquante
+            const [showConfigModal, setShowConfigModal] = useState(false);
             const [isUploading, setIsUploading] = useState(false);
             const [showQuoteModal, setShowQuoteModal] = useState(false);
             const [currentQuote, setCurrentQuote] = useState(null);
+
+            // VIEWER STATE
+            const [viewerFile, setViewerFile] = useState(null); // { name: string, blob: Blob }
+            const [isDownloading, setIsDownloading] = useState(false); // Spinner chargement fichier
 
             // ADMIN UI
             const [showAdminUploadModal, setShowAdminUploadModal] = useState(false);
@@ -235,7 +356,6 @@
 
                 if (storedConfig) {
                     const parsed = JSON.parse(storedConfig);
-                    // Priorité au token hardcodé s'il existe et est différent (pour mise à jour code)
                     if(HARDCODED_DBX_TOKEN && (!parsed.token || parsed.token !== HARDCODED_DBX_TOKEN)) parsed.token = HARDCODED_DBX_TOKEN;
                     setDbxConfig(parsed);
                 } else if(HARDCODED_DBX_TOKEN) {
@@ -258,20 +378,16 @@
             // --- AUTO REFRESH (POLLING) ---
             useEffect(() => {
                 let interval;
-                
-                // Déclencher le chargement immédiat si token présent, même sans user connecté (pour mettre à jour les accès)
                 if (dbxConfig.token) {
-                    // Chargement initial "silencieux" mais crucial pour les accès
                     loadCloudDatabase(true); 
 
-                    // Polling toutes les 60s pour les mises à jour auto (background)
                     interval = setInterval(() => {
                         console.log("Auto-refreshing data...");
-                        loadCloudDatabase(true); // true = silent mode
+                        loadCloudDatabase(true); 
                     }, 60000);
                 }
                 return () => clearInterval(interval);
-            }, [dbxConfig.token]); // Correction: plus de dépendance sur currentUser
+            }, [dbxConfig.token]); 
 
             // --- CLOUD OPERATIONS ---
             const saveToCloud = async (newTarifs, newFiches, newHistory, newUsers) => {
@@ -296,19 +412,14 @@
                     
                     setTarifs(data.tarifs || []);
                     setFiches(data.fiches || []);
-                    // Mise à jour de l'historique depuis le cloud
                     if (data.history && Array.isArray(data.history)) {
                         setDbHistory(data.history);
                     }
                     if (data.meta) setDbMeta(data.meta);
                     
-                    // Mise à jour CRITIQUE des utilisateurs pour le login
                     if (data.users && Array.isArray(data.users)) {
                         setUsers(data.users);
-                        // On force la persistance locale des users pour le prochain reload
                         localStorage.setItem('tdbx_users', JSON.stringify(data.users));
-                        
-                        // Si l'utilisateur est connecté, on met à jour ses droits
                         if(currentUser) {
                             const updatedCurrentUser = data.users.find(u => u.id === currentUser.id);
                             if(updatedCurrentUser) setCurrentUser(updatedCurrentUser);
@@ -321,7 +432,6 @@
                     if(e.message === "EXPIRED_TOKEN") {
                          setSyncStatus('error');
                          setSyncLog("❌ Token Expiré");
-                         // Ne pas alerter en boucle silencieuse, mais l'afficher dans l'UI
                     } else if (!silent) { setSyncLog("⚠️ Erreur Sync : " + e.message); setSyncStatus('error'); }
                 }
             };
@@ -354,16 +464,34 @@
                 setActiveTab('search');
             };
 
-            // --- ACTIONS ---
-            const openFile = async (path) => {
+            // --- ACTIONS LECTURE FICHIER ---
+            
+            // 1. Ouvrir en mode Lecteur (Télécharge en RAM)
+            const openFileInViewer = async (path, name) => {
                 if (!dbxConfig.token) return alert("Token manquant");
+                setIsDownloading(true);
                 try {
-                    const data = await dbxGetLink(dbxConfig.token, path);
-                    if(data.link) window.open(data.link, '_blank');
-                } catch(e) { 
-                    if(e.message === "EXPIRED_TOKEN") alert("Le Token Dropbox a expiré. Veuillez le mettre à jour dans l'Admin.");
-                    else alert("Erreur ouverture : " + e.message); 
+                    // Téléchargement du fichier binaire (Blob)
+                    const blob = await dbxDownloadFile(dbxConfig.token, path);
+                    setViewerFile({ name, blob });
+                } catch(e) {
+                    if(e.message === "EXPIRED_TOKEN") alert("Token expiré. Veuillez contacter l'admin.");
+                    else alert("Erreur chargement fichier : " + e.message);
+                } finally {
+                    setIsDownloading(false);
                 }
+            };
+
+            // 2. Sauvegarder sur disque (depuis le Viewer)
+            const saveFileToDisk = (fileObj) => {
+                const url = URL.createObjectURL(fileObj.blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = fileObj.name;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
             };
 
             const handleUploadFiche = async (e) => {
@@ -396,7 +524,7 @@
                 } catch (err) { alert("Erreur : " + err.message); } finally { setIsUploading(false); if(uploadInputRef.current) uploadInputRef.current.value = ''; }
             };
 
-            // ... (Fonctions Admin conservées : analyzePDF, handleManualTarifUpload, runFullSync, etc.) ...
+            // ... (Fonctions Admin conservées) ...
             const analyzePDF = async (blob, filename) => {
                 try {
                     const arrayBuffer = await blob.arrayBuffer();
@@ -618,6 +746,25 @@
                 <ErrorBoundary>
                     <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900 font-sans relative">
                         
+                        {/* VIEWER MODAL (Overlay) */}
+                        {viewerFile && (
+                            <FileViewer 
+                                file={viewerFile} 
+                                onClose={() => setViewerFile(null)} 
+                                onDownload={saveFileToDisk} 
+                            />
+                        )}
+
+                        {/* SPINNER GLOBAL SI DOWNLOAD */}
+                        {isDownloading && (
+                            <div className="fixed inset-0 bg-white/80 z-[110] flex items-center justify-center">
+                                <div className="text-center">
+                                    <Icon name="Loader2" size={48} className="animate-spin text-blue-600 mx-auto"/>
+                                    <p className="mt-4 font-bold text-slate-600">Chargement du document...</p>
+                                </div>
+                            </div>
+                        )}
+
                         {/* BANDEAU ALERTE SI ERREUR SYNC */}
                         {syncStatus === 'error' && (
                             <div className="bg-red-500 text-white text-xs font-bold text-center py-2 px-4 shadow-lg z-[100] sticky top-0">
@@ -802,7 +949,8 @@
                                                             </div>
                                                             <div className="flex items-center justify-between md:justify-end gap-3 pl-14 md:pl-0">
                                                                 <div className="text-2xl font-black text-blue-600 whitespace-nowrap mr-4">{res.price} <span className="text-xs text-slate-400 font-bold">{res.unit || 'DH'}</span></div>
-                                                                <button onClick={() => openFile(res.path)} className="bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 shadow-sm"><Icon name="Eye" size={14}/> Voir</button>
+                                                                {/* MODIFICATION: Ouvre openFileInViewer au lieu de openFile */}
+                                                                <button onClick={() => openFileInViewer(res.path, res.name)} className="bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 shadow-sm"><Icon name="Eye" size={14}/> Voir</button>
                                                             </div>
                                                         </div>
                                                     ))}
@@ -814,12 +962,13 @@
                                                 <h3 className="text-sm font-bold uppercase text-slate-400 mb-4 pl-2 flex items-center gap-2 border-t pt-6 mt-6 md:border-none md:pt-0 md:mt-0"><Icon name="FileText" size={16}/> Fiches ({searchResults.fiches.length})</h3>
                                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                     {searchResults.fiches.map((f, i) => (
-                                                        <div key={i} className="bg-white p-4 rounded-2xl border border-slate-100 hover:border-indigo-300 hover:shadow-md transition-all flex items-center justify-between group cursor-pointer" onClick={() => openFile(f.path)}>
+                                                        <div key={i} className="bg-white p-4 rounded-2xl border border-slate-100 hover:border-indigo-300 hover:shadow-md transition-all flex items-center justify-between group">
                                                             <div className="flex items-center gap-3">
                                                                 <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0"><Icon name="FileText" size={20}/></div>
                                                                 <div className="truncate pr-4"><div className="font-bold text-slate-700 truncate">{f.name}</div><div className="text-xs text-slate-400">PDF</div></div>
                                                             </div>
-                                                            <button onClick={() => openFile(f.path)} className="p-2 text-slate-400 hover:text-indigo-600 bg-slate-50 hover:bg-indigo-50 rounded-lg transition-colors"><Icon name="Eye" size={18}/></button>
+                                                            {/* MODIFICATION: Ouvre openFileInViewer au lieu de openFile */}
+                                                            <button onClick={() => openFileInViewer(f.path, f.name)} className="p-2 text-slate-400 hover:text-indigo-600 bg-slate-50 hover:bg-indigo-50 rounded-lg transition-colors"><Icon name="Eye" size={18}/></button>
                                                         </div>
                                                     ))}
                                                 </div>
