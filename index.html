@@ -63,12 +63,15 @@
         // Configuration PDF.js
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-        // --- CONFIGURATION PERMANENTE (ADMIN) ---
-        // REMPLISSEZ CES CHAMPS AVEC VOS CLÉS POUR QUE L'APP MARCHE PARTOUT SANS CONFIGURATION
-        const HARDCODED_APP_KEY = "0jxe3h5hj9vm2lk";      // Copier depuis Admin > Paramètres
-        const HARDCODED_APP_SECRET = "w39sunmc10iacrn";   // Copier depuis Admin > Paramètres
-        const HARDCODED_REFRESH_TOKEN = "d4eHpiM81MkAAAAAAAAAAegDgrk7iOjFmKn1FZE5CWzjKHm_3NfQd88qAPcXtbhL";// Copier depuis Admin > Paramètres (Le code long)
-        const HARDCODED_GEMINI_KEY = "";   // Votre clé IA (Facultatif si déjà sur Cloud)
+        // --- SECURITE (OBFUSCATION) ---
+        const _d = (s) => { try { return atob(s); } catch(e) { return ""; } };
+
+        // --- CONFIGURATION PERMANENTE OBFUSQUÉE (ADMIN) ---
+        // Les clés sont maintenant encodées en Base64 pour ne pas être lisibles directement
+        const HARDCODED_APP_KEY = "MGp4ZTNoNWhqOXZtMmxr"; // Clé encodée
+        const HARDCODED_APP_SECRET = "dzM5c3VubWMxMGlhY3Ju"; // Secret encodé
+        const HARDCODED_REFRESH_TOKEN = "c2wudS5BR01ibzItZUtVSHAxNTF6dnNrcnozemJ6X2NBbVFQYjhJUjRPTjBUcm1EYjBHdmlBeFp0eHVobGdwMVkydDA1ejkyNWFSYUFNZ1BvZjJERjZwbVc4dWMwRnJCeV9Id05uTlhwZXhLSnRNZE0xT2E1c0ZicDgzUkZiME1iLVJLbzRHa0RTUHlhdHQ5MEhjTjRCT3pyd0JKOVM5Q2hYdWFJUVQ1SEVoMU8zSXpBQ1llWEtzLW1ta1dfRFUyd3Z6MWxFaHpRN3pZOVByb2JJRmNJQjk1WmhZTl85TzRaRjV5bzJpQnNGMWVybUhTeTlNd3Q1d0Y2eGJjYUJ6Y3J3eF9XWUxJNmFzYUE0Rk4yeElVVjFSQ1FlcG9OcExYZVNnVzdlOEJZRW1ybjJkdVR3c2U5MmVvc3pnRHltaV9ualJVdERPb1kzYWJiSW01ZGtrUG1UUVNUYUpBVXRSY0hPRVFzR3ZpY2lLWmZfRU9KVWpnQkhTZk1LYTNUdGhweXotZkZwMFRSb0ZxQ1U0LWE4RmRiZ1ZMWTd1WEQwclVVVDVBMHlQWmwxcXQ0eUJKSnJMeWRvcHpBRk1KM1BSdnNaLVdmdlV4a3RhcVJYNmNwN1JHaFJjY1VSUFVOYnR3aXppbGpVc2U0RFQ0aWRIbzZWQnVaMy1wcEkyMzlEd2txVVBPZ3h1UTlCU3paWm90a2M3VFlkQUh0T04zTVcteTRTYTl4dFoyUUpCX3JlSXVxeWtqWWZqc054TGJZdUJwbTVRYXJlVDQzWkJYZUYtX0dyTFFiLXF6WU1mNXEzRWxYUjBSTVYtdVZYRHlkMGlLMGlsam5GUF81THVKMTZlMlQ1bU9WVmdKQ2VOdS1NdW5FNGVabFdjcFVhd3g5NW9raHFsVXo5ZmMycFktTDNUWXdaZVp1TDh1OVh5SzJjanBXdWQtNVBYZGFFQ2lrT1ZCZGNzZWh4M3IzQmI1T1FXdWMzWUpMa2MzdXJNcXFVVVVIdWhfSmh0b2ZLbVZ1UzVsM1ZFZWpLQU80V0ExeERtcWRfVUNIaU5ZbUZhajNhQkJlM3Y3LXp4dHhIZUd0WHUyN2M4cXZ6TGxMM0JDbW1yWHhNRmQwNndLSFNQVDJxbEhqSEtQQnJyLVZoc2tfY3FqWTQtakpOQVNrakdaSl9PRVB2c0VSSVQ3VFFNWWF0N0tabEFOREZXbFZWhGROQllLSGJ3VEZaYlV5OEZ6UjZzQUhwaVBaa0pXR19Ybk9nSzFtRmp5MlA0cDhwbi1RYjlWaGk1anB1RlJlbzhadFhDeUtTV1BNVzF2Y3RsSW9raXNoaDRiWUxYR09QeHBGbGhGLXBTakx5WmI5aEhKVWFmNnlPcGJSelJldXZOQkFRRUI5aFJIQTYzZjFnYTlaTmxLb0E4LW0xWV8tMlZtdE5Ob0ZzSnU4UkktS25kMWVoQjVUUU11N01IVV9xaHE2cHJLckJMTUI4NWpmTGwzeEctUmNvQ2x2c3llY2J6aUZ5d056NUZBWVYtZkZ0OTRieG1qR0hJM3NMY19HRFVYZjFrVzJ2c1hRc3hiQy1yVG9QSzFJVHZCcU1IZmxTbkFWNlhXQjk5TmhwZTVCOURGNHc2UWtHa1FTMC1KQldudldtZUhscDkyckVMaWZGLURlMmFvUkppN21yakR1ODlDT1FWQ0pqSlJZb2U0OUdCYURvbkRWTlRwcGlQU2diNXRKLUNhQ0VablNleVFWRF8tX19S"; // Token encodé
+        const HARDCODED_GEMINI_KEY = "";   // À encoder si vous le souhaitez (via atob)
 
         // Token de secours (Utilisé uniquement si les champs ci-dessus sont vides)
         const HARDCODED_DBX_TOKEN = "sl.u.AGNfi6dpn3OFF0iwMt2YWKrXQPCBk9WhThHZjSOxyR6XwFQFfq4ZBCUQqGgyeYThtWx-clnclh4ibhqOJYq8URbMFSO7o8dH0wpsv-cvPFS4CTI_fVEgvkRu0Mstv6uATcBireQO0Nic7fGXE61r6Z0B7y7fetsR-wJLStIugVeuYrcKDylZ25HIN2_UqVaVmsGnKggLlnypRmtOPiE4wIDtK6WoQbDEJywSotHYgSkOy13jutfwMi5CXvNkScstsxrYK9B1qE6KE4YTGU5swho5u0Gs7vlmERaUbaewcQf00YkrriYj1VFV35Y4-3l15kVxpdaVpB-mtFTnY4vjYJ_EJnKRk-C9F02M6zE8wKzWJNTAbfa0Pfm1NlQRKprtv4TZcOJfR39zNgxnK96eteXIg7YCkortY122aOh9tRrq0X8z69_VO0u2NdDnYsrX8luKybf3O8YyDn4R0c7ONo1fGyrcVtfcCZ6YBWmNR-CT1TEdniGwNSokHcjYK8n_HoRTP0226FBY0CTn0ZI02usi-9C3mdkpL7o-64UOJ-BcWJj5l8MULbMSF_Schh8j58AF8ZlcCrN-PA2w3IPAtE90WfkVVSG7uQp8xCC6oR0Vh-wMQ7VdTL29tQrEJ9h9MfMk_wJvjKuV4PbgdQiVX0ATmSsbfPOdUadMDAZvJWuOMQ8khanPym-ColgE2AoU-oaMkgE93kwxUFIgWX5FwtAL77KGorowNKk9v45geF-rkGdn6Khi8w9ZhG9BjUMlfkn_cxHVzD9sh8goxXqVXsw6IYDcq2-ILIIU7F3OnlielMyFRyh1tQTOaQPZzArZ_ZmAu7hpuUInqoa3kbkH71isRpdRaeKEQvLV2tJH5h0ytyEm2WCgIwbSP3obOs6Ag4cOJGLD2gKRds6PKUGakauJE7xunNeenm6ozNXjdeJEM_-JXwdVHrJuH2WD0huwlfN6ZvatM39Doga1XNCFj91cYFUlIS86FwTyWWKKbnnFXlKaKcTTJI32TWzYcj7nFsesCxVAjDc9rwD4Sg2LGOXxHBLFFu0MkV9vvSCRybCTb2BP8vObpHdsQjalIC8778e1kNcg4z4J5xyzAXn82idxs0eG8j6o6LKndkRqDkSsVwFfkVGe9uDdNEDpzvr02xAiT5sTfbbVfG_VC9Q6MIYX5YpP25O_O_d5z9Wa8V9QAN8ocZ8NHOUpkbPWAegI7Yy0Q-earUEdn2xf9KonmuZMUXmrR2FjcGNYEWXylyvLDuZdt_MJsfZtPyHTGyb7TMhhEuj8BgaxtrvP6uk8Zvxx"; 
@@ -306,15 +309,16 @@
             const [fiches, setFiches] = useState([]); 
             const [dbHistory, setDbHistory] = useState([]);
             const [dbMeta, setDbMeta] = useState(null);
-            // Config enrichie pour OAuth
+            
+            // Initialisation de la config avec décodage
             const [dbxConfig, setDbxConfig] = useState({ 
                 token: HARDCODED_DBX_TOKEN, 
-                refreshToken: HARDCODED_REFRESH_TOKEN || '', 
-                appKey: HARDCODED_APP_KEY || '', 
-                appSecret: HARDCODED_APP_SECRET || '', 
+                refreshToken: _d(HARDCODED_REFRESH_TOKEN) || '', 
+                appKey: _d(HARDCODED_APP_KEY) || '', 
+                appSecret: _d(HARDCODED_APP_SECRET) || '', 
                 pathTarifs: '/Tarifs', 
                 pathFT: '/Fiches', 
-                geminiKey: HARDCODED_GEMINI_KEY || '' 
+                geminiKey: _d(HARDCODED_GEMINI_KEY) || '' 
             });
             
             const [view, setView] = useState('login'); 
@@ -339,6 +343,7 @@
             const [adminUploadMode, setAdminUploadMode] = useState('new');
             const [targetTarifId, setTargetTarifId] = useState('');
             const [authCode, setAuthCode] = useState(''); // Code OAuth
+            const [t4Value, setT4Value] = useState(0); // Nouveau state pour T4 Input
             
             // USER EDIT UI
             const [editingUserIdx, setEditingUserIdx] = useState(null);
@@ -361,11 +366,17 @@
                     const parsed = JSON.parse(storedConfig);
                     // Priorité au token hardcodé s'il est plus récent ou présent
                     if(HARDCODED_DBX_TOKEN && !parsed.token) parsed.token = HARDCODED_DBX_TOKEN;
-                    // Priorité aux refresh tokens hardcodés s'ils sont présents dans le code source
-                    if(HARDCODED_REFRESH_TOKEN) parsed.refreshToken = HARDCODED_REFRESH_TOKEN;
-                    if(HARDCODED_APP_KEY) parsed.appKey = HARDCODED_APP_KEY;
-                    if(HARDCODED_APP_SECRET) parsed.appSecret = HARDCODED_APP_SECRET;
-                    if(HARDCODED_GEMINI_KEY) parsed.geminiKey = HARDCODED_GEMINI_KEY;
+                    
+                    // Gestion de la priorité des clés obfusquées hardcodées
+                    const decodedRefresh = _d(HARDCODED_REFRESH_TOKEN);
+                    const decodedKey = _d(HARDCODED_APP_KEY);
+                    const decodedSecret = _d(HARDCODED_APP_SECRET);
+                    const decodedGemini = _d(HARDCODED_GEMINI_KEY);
+
+                    if(decodedRefresh) parsed.refreshToken = decodedRefresh;
+                    if(decodedKey) parsed.appKey = decodedKey;
+                    if(decodedSecret) parsed.appSecret = decodedSecret;
+                    if(decodedGemini) parsed.geminiKey = decodedGemini;
                     
                     setDbxConfig(parsed);
                 } else {
@@ -373,10 +384,10 @@
                     setDbxConfig(prev => ({
                         ...prev, 
                         token: HARDCODED_DBX_TOKEN,
-                        refreshToken: HARDCODED_REFRESH_TOKEN,
-                        appKey: HARDCODED_APP_KEY,
-                        appSecret: HARDCODED_APP_SECRET,
-                        geminiKey: HARDCODED_GEMINI_KEY
+                        refreshToken: _d(HARDCODED_REFRESH_TOKEN),
+                        appKey: _d(HARDCODED_APP_KEY),
+                        appSecret: _d(HARDCODED_APP_SECRET),
+                        geminiKey: _d(HARDCODED_GEMINI_KEY)
                     }));
                 }
 
@@ -651,10 +662,10 @@
                         await page.render({ canvasContext: ctx, viewport }).promise;
                         const base64Img = canvas.toDataURL('image/png').split(',')[1];
                         
-                        // MISE A JOUR DU PROMPT POUR L'ASTERISQUE (*)
+                        // MISE A JOUR DU PROMPT POUR L'ASTERISQUE (*) ET LES VIRGULES PRIX
                         let prompt = i === 1 
-                            ? `Analyse page ${i}. Cherche date (format JJ/MM/AAAA) sinon "${filenameDate}". IMPORTANT: Si un produit a un astérisque (*) avant ou après son nom, GARDE-LE dans le champ "name" (ex: "Produit *"). JSON: { "date_tarif": "...", "products": [ {"name": "...", "price": "...", "unit": "..."} ] }` 
-                            : `Analyse page ${i}. IMPORTANT: Si un produit a un astérisque (*) avant ou après son nom, GARDE-LE dans le champ "name". JSON produits uniquement: { "products": [ {"name": "...", "price": "...", "unit": "..."} ] }`;
+                            ? `Analyse page ${i}. Cherche date (format JJ/MM/AAAA) sinon "${filenameDate}". IMPORTANT: 1. Si un produit a un astérisque (*) avant ou après son nom, GARDE-LE dans le champ "name" (ex: "Produit *"). 2. Garde EXACTEMENT la ponctuation des prix (virgule ou point pour les décimales), ne les supprime pas. JSON: { "date_tarif": "...", "products": [ {"name": "...", "price": "...", "unit": "..."} ] }` 
+                            : `Analyse page ${i}. IMPORTANT: 1. Si un produit a un astérisque (*) avant ou après son nom, GARDE-LE dans le champ "name". 2. Garde EXACTEMENT la ponctuation des prix (virgule ou point pour les décimales), ne les supprime pas. JSON produits uniquement: { "products": [ {"name": "...", "price": "...", "unit": "..."} ] }`;
                         
                         if (i > 1) await delay(1000);
                         try {
@@ -681,14 +692,26 @@
                     const analysis = await analyzePDF(file, file.name);
                     let newTarifs = [...tarifs];
                     if (adminUploadMode === 'update' && targetTarifId) newTarifs = newTarifs.filter(t => t.id !== targetTarifId);
-                    const docEntry = { id: uploadMeta.id, name: uploadMeta.name, path: uploadMeta.path_lower, server_modified: uploadMeta.server_modified, index_date: new Date().toLocaleString(), date_tarif: analysis.date_tarif, products: analysis.products };
+                    
+                    // SAVE T4 PERCENTAGE IN DOC ENTRY
+                    const docEntry = { 
+                        id: uploadMeta.id, 
+                        name: uploadMeta.name, 
+                        path: uploadMeta.path_lower, 
+                        server_modified: uploadMeta.server_modified, 
+                        index_date: new Date().toLocaleString(), 
+                        date_tarif: analysis.date_tarif, 
+                        products: analysis.products,
+                        t4_percentage: parseFloat(t4Value) || 0 // Store T4
+                    };
+                    
                     newTarifs.push(docEntry);
                     setTarifs(newTarifs);
-                    const newHistoryEntry = { date: new Date().toLocaleString(), user: currentUser.name, action: adminUploadMode === 'new' ? `Ajout: ${file.name}` : `MAJ: ${file.name}` };
+                    const newHistoryEntry = { date: new Date().toLocaleString(), user: currentUser.name, action: adminUploadMode === 'new' ? `Ajout: ${file.name} (T4: ${t4Value}%)` : `MAJ: ${file.name}` };
                     const updatedHistory = [newHistoryEntry, ...dbHistory].slice(0, 10);
                     setDbHistory(updatedHistory);
                     await saveToCloud(newTarifs, fiches, updatedHistory, users);
-                    setSyncLog(`✅ ${file.name} traité.`);
+                    setSyncLog(`✅ ${file.name} traité (T4: ${t4Value}%).`);
                     setSyncStatus('success');
                 } catch (err) { setSyncLog(`❌ Erreur: ${err.message}`); setSyncStatus('error'); } 
                 finally { if (adminFileInputRef.current) adminFileInputRef.current.value = ''; }
@@ -712,7 +735,19 @@
                                 await delay(1000);
                                 const analysis = await analyzePDF(blob, file.name);
                                 currentTarifs = currentTarifs.filter(t => t.id !== file.id);
-                                currentTarifs.push({ id: file.id, name: file.name, path: file.path_lower, server_modified: file.server_modified, index_date: new Date().toLocaleString(), date_tarif: analysis.date_tarif, products: analysis.products });
+                                // For automated sync, maintain existing T4 if available, otherwise default to 0
+                                const existingT4 = existing ? existing.t4_percentage : 0;
+                                
+                                currentTarifs.push({ 
+                                    id: file.id, 
+                                    name: file.name, 
+                                    path: file.path_lower, 
+                                    server_modified: file.server_modified, 
+                                    index_date: new Date().toLocaleString(), 
+                                    date_tarif: analysis.date_tarif, 
+                                    products: analysis.products,
+                                    t4_percentage: existingT4 // Preserve or default
+                                });
                             } catch(e) { setSyncLog(`Erreur ${file.name}: ${e.message}`); }
                         }
                     }
@@ -836,7 +871,14 @@
                 const foundProducts = [];
                 (tarifs || []).forEach(t => {
                     if (t.products) t.products.forEach(p => {
-                        if (p.name?.toLowerCase().includes(q)) foundProducts.push({ ...p, source: t.name, date_tarif: t.date_tarif, path: t.path, type: 'prod' });
+                        if (p.name?.toLowerCase().includes(q)) foundProducts.push({ 
+                            ...p, 
+                            source: t.name, 
+                            date_tarif: t.date_tarif, 
+                            path: t.path, 
+                            type: 'prod',
+                            t4_percentage: t.t4_percentage || 0 // Pass T4 to product
+                        });
                     });
                 });
                 const foundFiches = (fiches || []).filter(f => f.name.toLowerCase().includes(q));
@@ -1093,10 +1135,17 @@
                                                     {searchResults.products.map((res, i) => {
                                                         // LOGIQUE TVA CORRIGÉE (Asterisk avant OU après)
                                                         const isTaxable = res.name && (res.name.trim().startsWith('*') || res.name.trim().endsWith('*'));
-                                                        const priceVal = parseFloat(String(res.price).replace(/[^0-9.]/g, ''));
+                                                        // Nettoyage prix : remplace virgule par point pour le float, supprime tout sauf chiffres et point
+                                                        const priceVal = parseFloat(String(res.price).replace(/,/g, '.').replace(/[^0-9.]/g, ''));
                                                         const validPrice = !isNaN(priceVal);
                                                         const priceHT = validPrice ? priceVal.toFixed(2) : res.price;
                                                         const priceTTC = validPrice ? (priceVal * 1.20).toFixed(2) : null;
+                                                        
+                                                        // LOGIQUE T4 (Remise)
+                                                        // T4 s'applique sur TTC si taxable, ou sur HT si Exo
+                                                        const t4Rate = res.t4_percentage || 0;
+                                                        const basePriceForT4 = isTaxable ? (validPrice ? priceVal * 1.20 : 0) : priceVal;
+                                                        const priceT4 = validPrice ? (basePriceForT4 * (1 - t4Rate/100)).toFixed(2) : null;
 
                                                         return (
                                                             <div key={i} className="bg-white p-5 rounded-2xl border border-slate-100 hover:border-blue-300 hover:shadow-lg transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 group">
@@ -1107,6 +1156,7 @@
                                                                         <div className="flex flex-wrap items-center gap-2 mt-2">
                                                                             <span className="bg-slate-100 px-2.5 py-1 rounded-lg text-xs font-bold text-slate-600 flex items-center gap-1"><Icon name="Folder" size={12}/> {res.source}</span>
                                                                             <span className="px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1 bg-green-50 text-green-600 border border-green-100"><Icon name="Calendar" size={12}/> {res.date_tarif}</span>
+                                                                            {t4Rate > 0 && <span className="px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1 bg-orange-50 text-orange-600 border border-orange-100"><Icon name="Percent" size={12}/> T4: -{t4Rate}%</span>}
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -1115,11 +1165,15 @@
                                                                         {validPrice && isTaxable ? (
                                                                             <div className="flex flex-col items-end">
                                                                                 <div className="text-sm font-bold text-slate-400">{priceHT} <span className="text-[10px]">HT</span></div>
-                                                                                <div className="text-2xl font-black text-blue-600 whitespace-nowrap">{priceTTC} <span className="text-xs text-slate-400 font-bold">TTC</span></div>
+                                                                                <div className="text-xl font-bold text-slate-700 whitespace-nowrap">{priceTTC} <span className="text-xs text-slate-400 font-bold">TTC</span></div>
+                                                                                {t4Rate > 0 && <div className="text-2xl font-black text-orange-500 whitespace-nowrap">{priceT4} <span className="text-xs text-orange-300 font-bold">T4</span></div>}
                                                                             </div>
                                                                         ) : (
-                                                                            <div className="text-2xl font-black text-green-600 whitespace-nowrap">
-                                                                                {priceHT} <span className="text-xs text-green-800 font-bold">{validPrice ? 'EXO' : (res.unit || 'DH')}</span>
+                                                                            <div className="flex flex-col items-end">
+                                                                                <div className="text-xl font-bold text-green-600 whitespace-nowrap">
+                                                                                    {priceHT} <span className="text-xs text-green-800 font-bold">{validPrice ? 'EXO' : (res.unit || 'DH')}</span>
+                                                                                </div>
+                                                                                {t4Rate > 0 && validPrice && <div className="text-2xl font-black text-orange-500 whitespace-nowrap">{priceT4} <span className="text-xs text-orange-300 font-bold">T4</span></div>}
                                                                             </div>
                                                                         )}
                                                                         {validPrice && <div className="text-xs text-slate-400 font-bold mt-1 text-right">{res.unit || 'DH'}</div>}
@@ -1219,6 +1273,14 @@
                                                         <div><label className="text-xs font-bold text-slate-500 uppercase mb-1 block">Tarif à remplacer</label><select className="w-full p-3 border rounded-xl text-sm bg-white" required value={targetTarifId} onChange={e => setTargetTarifId(e.target.value)}><option value="">-- Choisir --</option>{tarifs.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}</select></div>
                                                     )}
                                                     <div><label className="text-xs font-bold text-slate-500 uppercase mb-1 block">Fichier PDF</label><input type="file" accept="application/pdf" required ref={adminFileInputRef} className="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"/></div>
+                                                    
+                                                    {/* CHAMP T4 */}
+                                                    <div>
+                                                        <label className="text-xs font-bold text-slate-500 uppercase mb-1 block">Remise T4 (%)</label>
+                                                        <input type="number" min="0" max="100" step="0.1" value={t4Value} onChange={e => setT4Value(e.target.value)} className="w-full p-3 border rounded-xl text-sm bg-slate-50 font-mono text-orange-600 font-bold" placeholder="0.0"/>
+                                                        <p className="text-[10px] text-slate-400 mt-1">Sera déduit du prix TTC ou EXO pour l'affichage.</p>
+                                                    </div>
+
                                                     <button disabled={syncStatus === 'working'} className="w-full bg-slate-800 text-white py-3 rounded-xl font-bold mt-2 hover:bg-slate-900 disabled:opacity-50 flex items-center justify-center gap-2">{syncStatus === 'working' ? <Icon name="Loader2" className="animate-spin"/> : <Icon name="UploadCloud"/>} Valider</button>
                                                 </form>
                                             </div>
@@ -1244,7 +1306,10 @@
                                                         <tr key={t.id} className="hover:bg-blue-50/30 group">
                                                             <td className="p-4 font-bold text-slate-700">{t.name}</td>
                                                             <td className="p-4"><span className="bg-green-100 text-green-700 px-2 py-1 rounded text-xs font-bold">TARIF</span></td>
-                                                            <td className="p-4 text-center text-blue-600 font-bold">{t.products?.length} produits</td>
+                                                            <td className="p-4 text-center">
+                                                                <div className="text-blue-600 font-bold">{t.products?.length} produits</div>
+                                                                {t.t4_percentage > 0 && <div className="text-xs text-orange-500 font-bold">T4: -{t.t4_percentage}%</div>}
+                                                            </td>
                                                             <td className="p-4 text-right">
                                                                 <button onClick={() => handleDeleteEntry('tarif', t.id, t.name)} className="text-slate-300 hover:text-red-500 transition-colors p-2" title="Supprimer"><Icon name="Trash2" size={16}/></button>
                                                             </td>
@@ -1298,5 +1363,4 @@
         root.render(<App />);
     </script>
 </body>
-
 </html>
